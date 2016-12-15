@@ -10,25 +10,28 @@ export class Provider {
     this.config = config;
   }
 
-  signin({ signin_uri, scope, state, response_type }, callback) {
-    const { id, redirect_uri } = this.config;
-    const params = {
-      client_id: id,
-      redirect_uri
+    /**
+     * SignIn - Performs the sign-in operation
+     * @param input_params - Object with parameters to pass to the authorize request client_id, redirect_uri and signin_uri are required keys.
+     * @param callback - Callback Function
+     */
+  signin(input_params, callback) {
+    const params = { //Add Static Components
+        client_id: encodeURIComponent(this.config.id),
+        redirect_uri: encodeURIComponent(this.config.redirect_uri)
     };
-    if (response_type) {
-      params.response_type = response_type;
+
+    //Cycles through all input_params, ands adds to params with proper encoding
+    for (var key in input_params) { //Pull all items out of ref & properly encode them
+      if (!input_params.hasOwnProperty(key)) continue;// skip loop if from prototype
+      params[key] = encodeURIComponent(input_params[key]);
     }
-    if (scope) {
-      params.scope = scope;
-    }
-    if (state) {
-      params.state = state;
-    }
+    delete params['signin_uri']; //Remove since for URL, not for param
+
     if (!params.client_id || !params.redirect_uri) {
       callback(`Invalid sign in params. ${params.client_id} ${params.redirect_uri}`);
     } else {
-      const url = Utils.urlBuilder(signin_uri, params);
+      const url = Utils.urlBuilder(input_params.signin_uri, params);
       callback(null, { url });
     }
   }
@@ -86,7 +89,7 @@ export class Provider {
           const mappedProfile = profileMap ? profileMap(profileJson) : profileJson;
           resolve(mappedProfile);
         }
-      });
+      }).auth(null, null, true, access_token);//Add Bearer Token to Request
     });
 
     attemptAuthorize()

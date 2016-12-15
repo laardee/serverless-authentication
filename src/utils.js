@@ -61,7 +61,7 @@ export class Utils {
    * @param config {redirect_client_uri {string}, token_secret {string}}
    * @param callback {function} callback function e.g. context.done
    */
-  static tokenResponse(data, { redirect_client_uri, token_secret }, callback) {
+  static tokenResponse(data, { redirect_client_uri, redirect_method, token_secret }, callback) {
     const { payload, options } = data.authorizationToken;
     const params = {
       authorizationToken: this.createToken(payload, token_secret, options)
@@ -74,9 +74,33 @@ export class Utils {
         }
       }
     }
+    var result = {
+      url : redirect_client_uri,
+      method : redirect_method,
+      form : this.getRedirectForm(redirect_client_uri, redirect_method, params)
+    };
+    if(redirect_method !== 'POST'){ //Leave Default Behavior
+      result.url = this.urlBuilder(result.url, params);
+    }
+    return callback(null, result);
+  }
 
-    const url = this.urlBuilder(redirect_client_uri, params);
-    return callback(null, { url });
+    /**
+     * getRedirection Form - Takes a given target, HTTP Method, and params and creates a form that will auto-submit on page load.
+     * @param action - The location where the form should be submitted.
+     * @param method - The HTTP Method to use for the submission.
+     * @param params - An object of name/values to set the name/values of a hidden for for.
+     * @returns {string} - The HTML of a webpage which will submit the params to the action using the method on page load.
+     */
+  static getRedirectForm(action, method, params){
+    var html = "<!DOCTYPE html><head><meta charset='UTF-8'><title>Redirecting...</title></head><body onload='document.redirectForm.submit()'>";
+    html += "<form name='redirectForm' action='" + action.replace("'") + "' method='" + method.replace("'") + "' >";
+    for (var name in params) {
+        if(!params.hasOwnProperty(name)) continue;
+        html += "<input type='hidden' name='" + name.replace("'") + "' value='" + params[name].replace("'") + "'>";
+    }
+    html += "</form></body></html>"
+    return html;
   }
 
   /**
