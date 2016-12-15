@@ -20,7 +20,9 @@ class Config {
           }
           this.providers[provider][type] = value;
         } else if (key === 'REDIRECT_URI') {
-          this.redirect_uri = value;
+            this.redirect_uri = value;
+        } else if (key == 'REDIRECT_METHOD') {
+            this.redirect_method = value;
         } else if (key === 'REDIRECT_CLIENT_URI') {
           this.redirect_client_uri = value;
         } else if (key === 'TOKEN_SECRET') {
@@ -40,6 +42,7 @@ class Config {
       result.provider = provider;
     }
     result.token_secret = this.token_secret;
+    result.redirect_method = this.redirect_method;
     return result;
   }
 }
