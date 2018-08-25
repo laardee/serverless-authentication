@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
-import decamelize from 'decamelize';
+import jwt from 'jsonwebtoken'
+import decamelize from 'decamelize'
 
 /**
  * Utilities for Serverless Authentication
@@ -11,7 +11,7 @@ class Utils {
    * @param provider {string} provider e.g. facebook
    */
   static redirectUrlBuilder(url, provider) {
-    return url.replace(/{provider}/g, provider);
+    return url.replace(/{provider}/g, provider)
   }
 
   /**
@@ -20,7 +20,7 @@ class Utils {
    * @param params {object} url params
    */
   static urlBuilder(url, params) {
-    return `${url}?${this.urlParams(params)}`;
+    return `${url}?${this.urlParams(params)}`
   }
 
   /**
@@ -29,9 +29,9 @@ class Utils {
    */
   static urlParams(params) {
     const result =
-      Object.keys(params).map(key =>
-        `${decamelize(key)}=${params[key]}`);
-    return result.join('&');
+      Object.keys(params).map((key) =>
+        `${decamelize(key)}=${params[key]}`)
+    return result.join('&')
   }
 
   /**
@@ -40,7 +40,7 @@ class Utils {
    * @param config {object} with token_secret --> change to secret
    */
   static createToken(data, secret, options) {
-    return jwt.sign(data, secret, options);
+    return jwt.sign(data, secret, options)
   }
 
   /**
@@ -49,7 +49,7 @@ class Utils {
    * @param config {object} with token_secret --> change to secret
    */
   static readToken(token, secret, options) {
-    return jwt.verify(token, secret, options);
+    return jwt.verify(token, secret, options)
   }
 
   /**
@@ -58,12 +58,12 @@ class Utils {
    * @param config {redirect_client_uri {string}, token_secret {string}}
    */
   static tokenResponse(data, { redirect_client_uri, token_secret }) {
-    const { payload, options } = data.authorizationToken;
+    const { payload, options } = data.authorizationToken
     const params =
       Object.assign({}, data, {
         authorizationToken: this.createToken(payload, token_secret, options)
-      });
-    return { url: this.urlBuilder(redirect_client_uri, params) };
+      })
+    return { url: this.urlBuilder(redirect_client_uri, params) }
   }
 
   /**
@@ -72,7 +72,7 @@ class Utils {
    * @param config {redirect_client_uri {string}}
    */
   static errorResponse(params, { redirect_client_uri }) {
-    return { url: this.urlBuilder(redirect_client_uri, params) };
+    return { url: this.urlBuilder(redirect_client_uri, params) }
   }
 
   /**
@@ -83,24 +83,24 @@ class Utils {
    *  (arn:aws:execute-api:<regionId>:<accountId>:<apiId>/<stage>/<method>/<resourcePath>)
    */
   static generatePolicy(principalId, effect, resource) {
-    const authResponse = {};
-    authResponse.principalId = principalId;
+    const authResponse = {}
+    authResponse.principalId = principalId
     if (effect && resource) {
-      const policyDocument = {};
-      policyDocument.Version = '2012-10-17';
-      policyDocument.Statement = [];
+      const policyDocument = {}
+      policyDocument.Version = '2012-10-17'
+      policyDocument.Statement = []
 
-      const statementOne = {};
-      statementOne.Action = 'execute-api:Invoke';
-      statementOne.Effect = effect;
-      statementOne.Resource = resource;
-      policyDocument.Statement[0] = statementOne;
-      authResponse.policyDocument = policyDocument;
+      const statementOne = {}
+      statementOne.Action = 'execute-api:Invoke'
+      statementOne.Effect = effect
+      statementOne.Resource = resource
+      policyDocument.Statement[0] = statementOne
+      authResponse.policyDocument = policyDocument
     }
-    return authResponse;
+    return authResponse
   }
 }
 
 module.exports = {
-  Utils,
-};
+  Utils
+}
