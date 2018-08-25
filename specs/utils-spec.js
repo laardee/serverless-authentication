@@ -86,7 +86,7 @@ describe('Utils', () => {
           expiresIn: 15
         }
       };
-      expect( utils.tokenResponse({ authorizationToken, refreshToken, id }, providerConfig).url)
+      expect(utils.tokenResponse({ authorizationToken, refreshToken, id }, providerConfig).url)
         .to.match(/http:\/\/localhost:3000\/auth\/facebook\/\?authorization_token=[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?&refresh_token=[A-Fa-f0-9]{64}&id=.+$/);
     });
   });
