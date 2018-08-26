@@ -1,19 +1,18 @@
-'use strict';
 /**
  * Profile class that normalizes profile data fetched from authentication provider
  */
 
 function formatAddress(address) {
-  const result = address;
+  const result = address
   if (result) {
     result.formatted =
-      `${result.street_address}\n${result.postal_code} ${result.locality}\n${result.country}`;
-    return result;
+      `${result.street_address}\n${result.postal_code} ${result.locality}\n${result.country}`
+    return result
   }
-  return null;
+  return null
 }
 
-export class Profile {
+class Profile {
   /**
    * @param data {object}
    */
@@ -43,17 +42,21 @@ export class Profile {
       'updated_at',
       'website',
       'zoneinfo'
-    ];
-    this._raw = data;
-    for (const field of fields) {
-      if (data.hasOwnProperty(field)) {
-        const value = data[field];
+    ]
+    this._raw = data // eslint-disable-line no-underscore-dangle
+    fields.forEach((field) => {
+      if (Object.hasOwnProperty.call(data, field)) {
+        const value = data[field]
         if (field === 'address') {
-          this.address = formatAddress(data.address);
+          this.address = formatAddress(data.address)
         } else {
-          this[field] = value || null;
+          this[field] = value || null
         }
       }
-    }
+    })
   }
+}
+
+module.exports = {
+  Profile
 }

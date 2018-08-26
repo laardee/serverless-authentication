@@ -1,17 +1,17 @@
-import jwt from 'jsonwebtoken';
-import decamelize from 'decamelize';
+import jwt from 'jsonwebtoken'
+import decamelize from 'decamelize'
 
 /**
  * Utilities for Serverless Authentication
  */
-export class Utils {
+class Utils {
   /**
    * Creates redirectUrl
    * @param url {string} url base
    * @param provider {string} provider e.g. facebook
    */
   static redirectUrlBuilder(url, provider) {
-    return url.replace(/{provider}/g, provider);
+    return url.replace(/{provider}/g, provider)
   }
 
   /**
@@ -20,7 +20,7 @@ export class Utils {
    * @param params {object} url params
    */
   static urlBuilder(url, params) {
-    return `${url}?${this.urlParams(params)}`;
+    return `${url}?${this.urlParams(params)}`
   }
 
   /**
@@ -28,13 +28,10 @@ export class Utils {
    * @param params {object}
    */
   static urlParams(params) {
-    const result = [];
-    for (const key in params) {
-      if (params.hasOwnProperty(key)) {
-        result.push(`${decamelize(key)}=${params[key]}`);
-      }
-    }
-    return result.join('&');
+    const result =
+      Object.keys(params).map((key) =>
+        `${decamelize(key)}=${params[key]}`)
+    return result.join('&')
   }
 
   /**
@@ -43,7 +40,7 @@ export class Utils {
    * @param config {object} with token_secret --> change to secret
    */
   static createToken(data, secret, options) {
-    return jwt.sign(data, secret, options);
+    return jwt.sign(data, secret, options)
   }
 
   /**
@@ -52,42 +49,30 @@ export class Utils {
    * @param config {object} with token_secret --> change to secret
    */
   static readToken(token, secret, options) {
-    return jwt.verify(token, secret, options);
+    return jwt.verify(token, secret, options)
   }
 
   /**
    * Creates token response and triggers callback
    * @param data {payload: object, options: object}
    * @param config {redirect_client_uri {string}, token_secret {string}}
-   * @param callback {function} callback function e.g. context.done
    */
-  static tokenResponse(data, { redirect_client_uri, token_secret }, callback) {
-    const { payload, options } = data.authorizationToken;
-    const params = {
-      authorizationToken: this.createToken(payload, token_secret, options)
-    };
-
-    for (const key in data) {
-      if (data.hasOwnProperty(key)) {
-        if (key !== 'authorizationToken') {
-          params[key] = data[key];
-        }
-      }
-    }
-
-    const url = this.urlBuilder(redirect_client_uri, params);
-    return callback(null, { url });
+  static tokenResponse(data, { redirect_client_uri, token_secret }) {
+    const { payload, options } = data.authorizationToken
+    const params =
+      Object.assign({}, data, {
+        authorizationToken: this.createToken(payload, token_secret, options)
+      })
+    return { url: this.urlBuilder(redirect_client_uri, params) }
   }
 
   /**
    * Creates error response and triggers callback
    * @param params
    * @param config {redirect_client_uri {string}}
-   * @param callback {function} callback function e.g. context.done
    */
-  static errorResponse(params, { redirect_client_uri }, callback) {
-    const url = this.urlBuilder(redirect_client_uri, params);
-    return callback(null, { url });
+  static errorResponse(params, { redirect_client_uri }) {
+    return { url: this.urlBuilder(redirect_client_uri, params) }
   }
 
   /**
@@ -98,20 +83,24 @@ export class Utils {
    *  (arn:aws:execute-api:<regionId>:<accountId>:<apiId>/<stage>/<method>/<resourcePath>)
    */
   static generatePolicy(principalId, effect, resource) {
-    const authResponse = {};
-    authResponse.principalId = principalId;
+    const authResponse = {}
+    authResponse.principalId = principalId
     if (effect && resource) {
-      const policyDocument = {};
-      policyDocument.Version = '2012-10-17';
-      policyDocument.Statement = [];
+      const policyDocument = {}
+      policyDocument.Version = '2012-10-17'
+      policyDocument.Statement = []
 
-      const statementOne = {};
-      statementOne.Action = 'execute-api:Invoke';
-      statementOne.Effect = effect;
-      statementOne.Resource = resource;
-      policyDocument.Statement[0] = statementOne;
-      authResponse.policyDocument = policyDocument;
+      const statementOne = {}
+      statementOne.Action = 'execute-api:Invoke'
+      statementOne.Effect = effect
+      statementOne.Resource = resource
+      policyDocument.Statement[0] = statementOne
+      authResponse.policyDocument = policyDocument
     }
-    return authResponse;
+    return authResponse
   }
+}
+
+module.exports = {
+  Utils
 }
