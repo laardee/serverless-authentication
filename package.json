@@ -1,6 +1,6 @@
 {
   "name": "serverless-authentication",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "main": "lib/index.js",
   "license": "MIT",
   "private": false,
@@ -39,7 +39,7 @@
   "scripts": {
     "compile": "rm -rf lib/* && ./node_modules/.bin/babel src --out-dir lib",
     "prepublish": "npm run test && npm run compile",
-    "test": "./node_modules/.bin/jest .",
-    "lint": "eslint . --fix"
+    "test": "./node_modules/.bin/jest src",
+    "lint": "eslint src --fix"
   }
 }

@@ -47,7 +47,7 @@ class Config {
  * @param provider {string} oauth provider name e.g. facebook or google
  */
 function config({ provider, host, stage }) {
-  if (!process.env.REDIRECT_URI) {
+  if (!process.env.REDIRECT_URI && host && stage) {
     process.env.REDIRECT_URI = `https://${host}/${stage}/authentication/callback/{provider}`
   }
   return (new Config()).getConfig(provider)
