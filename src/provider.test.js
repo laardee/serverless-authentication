@@ -16,7 +16,7 @@ describe('Provider', () => {
   })
 
   describe('Signin', () => {
-    it('should return facebook signin url', async () => {
+    it('should return facebook signin url', () => {
       const provider = 'facebook'
       const providerConfig = config({ provider })
       const options = {
@@ -24,13 +24,13 @@ describe('Provider', () => {
         scope: 'email',
         state: 'state-123'
       }
-      const data = await new Provider(providerConfig).signin(options)
+      const data = new Provider(providerConfig).signin(options)
       expect(data.url).toBe(
         'https://auth.laardee.com/signin/facebook?client_id=fb-mock-id&redirect_uri=https://api-id.execute-api.eu-west-1.amazonaws.com/dev/authentication/callback/facebook&scope=email&state=state-123'
       )
     })
 
-    it('should return custom signin url', async () => {
+    it('should return custom signin url', () => {
       const provider = 'custom-config'
       const providerConfig = config({ provider })
       const options = {
@@ -38,13 +38,13 @@ describe('Provider', () => {
         scope: 'email',
         state: 'state-123'
       }
-      const data = await new Provider(providerConfig).signin(options)
+      const data = new Provider(providerConfig).signin(options)
       expect(data.url).toBe(
         'https://auth.laardee.com/signin/custom-config?client_id=cc-mock-id&redirect_uri=https://api-id.execute-api.eu-west-1.amazonaws.com/dev/authentication/callback/custom-config&scope=email&state=state-123'
       )
     })
 
-    it('should fail to return signin url', async () => {
+    it('should fail to return signin url', () => {
       const provider = 'crappyauth'
       const providerConfig = config({ provider })
       const options = {
@@ -55,7 +55,7 @@ describe('Provider', () => {
 
       let data
       try {
-        data = await new Provider(providerConfig).signin(options)
+        data = new Provider(providerConfig).signin(options)
       } catch (exception) {
         expect(exception.message).toBe(
           "Invalid sign in params. client_id: 'undefined' redirect_uri: 'https://api-id.execute-api.eu-west-1.amazonaws.com/dev/authentication/callback/crappyauth'"
